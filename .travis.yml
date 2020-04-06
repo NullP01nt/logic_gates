@@ -1,4 +1,21 @@
+sudo: required
 language: rust
+
+# Cache cargo symbols for faster build
+cache: cargo
+
+addons:
+    apt:
+        packages:
+            - libcurl4-openssl-dev
+            - libelf-dev
+            - libdw-dev
+            - binutils-dev
+            - cmake
+        sources:
+            - kalakris-cmake
+
+
 rust:
     - stable
     - beta
@@ -7,8 +24,18 @@ matrix:
     allow_failures:
         - rust: nightly
     fast_finish: true
-cache: cargo
 
+before_script:
+    - export PATH=$HOME/.cargo/bin:$PATH
+    - cargo install cargo-update || echo "cargo-update already installed"
+    - cargo install cargo-travis || echo "cargo-travis already installed"
+    - cargo install-update -a # update outdated caches binaries
+
+# Main build
 script:
     - cargo build --verbose
     - cargo test --verbose
+    - cargo doc
+
+after_success:
+    - cargo doc-upload

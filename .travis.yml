@@ -38,4 +38,4 @@ script:
     - cargo doc
 
 after_success:
-    - cargo doc-upload
+    - cargo doc-upload --clobber-index
